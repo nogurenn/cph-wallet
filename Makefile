@@ -43,7 +43,7 @@ startTestDB: .env
 .PHONY: startTestDB
 
 migrateDB: .env
-	docker-compose run --rm -v $(PWD)/scripts/migrations/forex:/flyway/sql:delegated -e SCHEMA=wallet flyway
+	docker-compose run --rm -v $(PWD)/scripts/migrations/wallet:/flyway/sql:delegated -e SCHEMA=wallet flyway
 .PHONY: migrateDB
 
 stopContainers:
