@@ -1,0 +1,45 @@
+version: "3"
+
+services:
+  app-dev:
+    image: golang:1.17
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./bin:/code/bin
+    entrypoint: /code/bin/wallet
+    env_file: .env
+
+  golang:
+    build:
+      context: .
+      dockerfile: ./scripts/golang.Dockerfile
+    volumes:
+      - .:/code:cached
+    working_dir: /code
+    env_file: .env
+    environment:
+      - GOPATH=/code/.go
+      - CGO_ENABLED=0
+
+  postgres-test:
+    image: postgres:13.5-alpine
+    ports:
+      - "5432:${DB_PORT}" # host:container
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+
+  flyway:
+    image: flyway/flyway:8.4-alpine
+    volumes:
+      - ./scripts/flyway-migrate.sh:/flyway/flyway-migrate.sh:delegated
+    entrypoint: /flyway/flyway-migrate.sh
+    env_file: .env
+
+  mockery:
+    image: vektra/mockery:v2.9
+    volumes:
+      - .:/code:cached
+    working_dir: /code

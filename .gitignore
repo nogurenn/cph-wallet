@@ -114,6 +114,9 @@ fabric.properties
 .nfs*
 
 ### Go template
+.go/
+bin/
+
 # Binaries for programs and plugins
 *.exe
 *.exe~
