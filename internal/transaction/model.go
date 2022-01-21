@@ -19,10 +19,11 @@ type Transaction struct {
 }
 
 type Entry struct {
-	Id            uuid.UUID       `db:"id"`
-	TransactionId uuid.UUID       `db:"transaction_id"`
-	AccountId     uuid.NullUUID   `db:"account_id"`
-	Name          string          `db:"name"`
-	Credit        decimal.Decimal `db:"credit"`
-	Debit         decimal.Decimal `db:"debit"`
+	Id                uuid.UUID       `db:"id"`
+	TransactionId     uuid.UUID       `db:"transaction_id"`
+	AccountId         uuid.NullUUID   `db:"account_id"`
+	Name              string          `db:"name"`
+	Credit            decimal.Decimal `db:"credit"`
+	Debit             decimal.Decimal `db:"debit"`
+	dbutil.Timestamps `json:"-"`
 }
