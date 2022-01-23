@@ -10,6 +10,8 @@ type Account struct {
 	Id                uuid.UUID `db:"id"`
 	Username          string    `db:"username"`
 	dbutil.Timestamps `json:"-"`
+	Balance           decimal.Decimal `db:"balance"`
+	Currency          string          `db:"currency"`
 }
 
 type Transaction struct {

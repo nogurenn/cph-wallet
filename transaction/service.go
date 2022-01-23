@@ -17,6 +17,8 @@ func NewService(db Repository) Service {
 	return &service{db: db}
 }
 
+const defaultAccountCurrency = "USD"
+
 func (s *service) CreateAccount(username string) error {
 	txn, err := s.db.BeginTxn()
 	if err != nil {
@@ -26,6 +28,7 @@ func (s *service) CreateAccount(username string) error {
 	newAccount := Account{
 		Id:       uuid.New(),
 		Username: username,
+		Currency: defaultAccountCurrency,
 	}
 
 	if err = s.db.CreateAccount(txn, newAccount); err != nil {

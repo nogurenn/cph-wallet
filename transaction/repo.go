@@ -48,7 +48,7 @@ func (db *postgresDb) GetAccounts(txn dbutil.Transaction) ([]Account, error) {
 }
 
 const sqlCreateAccount = `
-INSERT INTO accounts (id, username) VALUES (:id, :username)
+INSERT INTO accounts (id, username, currency) VALUES (:id, :username, :currency)
 `
 
 func (db *postgresDb) CreateAccount(txn dbutil.Transaction, account Account) error {

@@ -23,8 +23,9 @@ func Test_Service_CreateAccount_Success(t *testing.T) {
 	db.On("CreateAccount",
 		txn,
 		mock.MatchedBy(func(account transaction.Account) bool {
-			return assert.Equal(t, account.Username, username) &&
-				assert.NotNil(t, account.Id)
+			return assert.Equal(t, username, account.Username) &&
+				assert.NotNil(t, account.Id) &&
+				assert.Equal(t, "USD", account.Currency)
 		}),
 	).Return(nil)
 
@@ -39,8 +40,8 @@ func Test_Service_CreateAccount_Success(t *testing.T) {
 
 func Test_Service_GetAccounts_Success(t *testing.T) {
 	// given
-	alice := transaction.Account{Id: uuid.New(), Username: "alice456"}
-	bob := transaction.Account{Id: uuid.New(), Username: "bob123"}
+	alice := transaction.Account{Id: uuid.New(), Username: "alice456", Currency: "USD"}
+	bob := transaction.Account{Id: uuid.New(), Username: "bob123", Currency: "USD"}
 	accounts := []transaction.Account{alice, bob}
 
 	txn := new(mockdbutil.Transaction)

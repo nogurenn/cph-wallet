@@ -19,8 +19,8 @@ func Test_PostgresDb_GetAccounts(t *testing.T) {
 	assert.NoError(t, err)
 	pdb := transaction.NewPostgresDb(db)
 
-	alice := transaction.Account{Id: uuid.New(), Username: "alice456"}
-	bob := transaction.Account{Id: uuid.New(), Username: "bob123"}
+	alice := transaction.Account{Id: uuid.New(), Username: "alice456", Currency: "USD"}
+	bob := transaction.Account{Id: uuid.New(), Username: "bob123", Currency: "USD"}
 
 	// when
 	txn, err := pdb.BeginTxn()
