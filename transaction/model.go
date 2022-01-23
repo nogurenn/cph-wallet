@@ -2,7 +2,7 @@ package transaction
 
 import (
 	"github.com/google/uuid"
-	"github.com/nogurenn/cph-wallet/internal/dbutil"
+	"github.com/nogurenn/cph-wallet/dbutil"
 	"github.com/shopspring/decimal"
 )
 
