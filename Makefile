@@ -54,7 +54,7 @@ stopContainers:
 
 # run this to ensure interface changes are reflected by mocks
 genMocks: .env
-	docker-compose run --rm mockery --all --output=./internal/mocks/autogen
+	docker-compose run --rm mockery --all --output=./mocks/autogen --inpackage --keeptree
 .PHONY: genMocks
 
 runDev: .env
