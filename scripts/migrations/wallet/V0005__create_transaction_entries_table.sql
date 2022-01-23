@@ -3,7 +3,7 @@ CREATE TABLE transaction_entries
 (
     id             UUID PRIMARY KEY,
     transaction_id UUID                     NOT NULL,
-    account_id     UUID,
+    account_id     UUID                     NOT NULL,
     name           TEXT                     NOT NULL,
     credit         DECIMAL(32, 8)           NOT NULL CHECK (credit >= 0.0),
     debit          DECIMAL(32, 8)           NOT NULL CHECK (debit <= 0.0),
