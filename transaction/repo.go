@@ -36,7 +36,13 @@ func (db *postgresDb) BeginTxn() (dbutil.Transaction, error) {
 }
 
 const sqlGetAccounts = `
-SELECT * FROM accounts ORDER BY username ASC
+SELECT
+	a.id,
+	a.username,
+	a.currency,
+	COALESCE(SUM(te.credit + te.debit), 0.0) AS balance
+FROM accounts a LEFT JOIN transaction_entries te ON a.id = te.account_id
+GROUP BY a.id
 `
 
 func (db *postgresDb) GetAccounts(txn dbutil.Transaction) ([]Account, error) {
