@@ -47,11 +47,9 @@ $ make startDev
 
 On another shell session, perform API calls.
 ```
-$ curl localhost:8080/hello
-...
-$ curl localhost:8080/rates/latest
-$ curl localhost:8080/rates/2022-01-18
-$ curl localhost:8080/rates/analyze
+$ curl localhost:8080/transaction/v1/accounts
+
+$ curl localhost:8080/metrics
 ```
 
 Stop all containers
