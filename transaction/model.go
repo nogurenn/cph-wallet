@@ -7,10 +7,10 @@ import (
 )
 
 type Account struct {
-	Id                uuid.UUID       `db:"id"`
-	Username          string          `db:"username"`
-	Balance           decimal.Decimal `db:"balance"`
-	Currency          string          `db:"currency"`
+	Id                uuid.UUID       `db:"id" json:"-"`
+	Username          string          `db:"username" json:"id"`
+	Balance           decimal.Decimal `db:"balance" json:"balance"` // decimal.Decimal marshals to string to prevent silent precision loss
+	Currency          string          `db:"currency" json:"currency"`
 	dbutil.Timestamps `json:"-"`
 }
 

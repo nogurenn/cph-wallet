@@ -8,9 +8,11 @@ import (
 const transactionSchemaName = "wallet"
 
 type Repository interface {
+	// BeginTxn creates a transaction object to be used by queries and commands representing a single transaction.
 	BeginTxn() (dbutil.Transaction, error)
-
+	// GetAccounts retrieves a slice of Account instances.
 	GetAccounts(txn dbutil.Transaction) ([]Account, error)
+	// CreateAccount creates an Account in the storage.
 	CreateAccount(txn dbutil.Transaction, account Account) error
 }
 
