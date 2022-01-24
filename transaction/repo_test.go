@@ -7,15 +7,15 @@ import (
 	"testing"
 
 	"github.com/google/uuid"
-	dbutil2 "github.com/nogurenn/cph-wallet/dbutil"
+	"github.com/nogurenn/cph-wallet/dbutil"
 	"github.com/nogurenn/cph-wallet/transaction"
 	"github.com/stretchr/testify/assert"
 )
 
 func Test_PostgresDb_GetAccounts(t *testing.T) {
 	// given
-	cfg := dbutil2.NewConfig()
-	db, err := dbutil2.NewDb(cfg)
+	cfg := dbutil.NewConfig()
+	db, err := dbutil.NewDb(cfg)
 	assert.NoError(t, err)
 	pdb := transaction.NewPostgresDb(db)
 
@@ -42,6 +42,8 @@ func Test_PostgresDb_GetAccounts(t *testing.T) {
 	// check for correctness and sort order (ASC)
 	assert.Equal(t, alice.Id, fetched[0].Id)
 	assert.Equal(t, alice.Username, fetched[0].Username)
+	assert.True(t, alice.Balance.IsZero())
 	assert.Equal(t, bob.Id, fetched[1].Id)
 	assert.Equal(t, bob.Username, fetched[1].Username)
+	assert.True(t, bob.Balance.IsZero())
 }
