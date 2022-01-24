@@ -3,7 +3,7 @@ package util_test
 import (
 	"testing"
 
-	"github.com/nogurenn/cph-wallet/internal/util"
+	"github.com/nogurenn/cph-wallet/util"
 	"github.com/stretchr/testify/assert"
 )
 

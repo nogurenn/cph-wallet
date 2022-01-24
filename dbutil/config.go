@@ -2,7 +2,7 @@ package dbutil
 
 import (
 	"github.com/kelseyhightower/envconfig"
-	"github.com/nogurenn/cph-wallet/internal/util"
+	"github.com/nogurenn/cph-wallet/util"
 )
 
 type Config struct {
