@@ -18,6 +18,7 @@ type Transaction struct {
 	Id                uuid.UUID `db:"id"`
 	Name              string    `db:"name"`
 	dbutil.Timestamps `json:"-"`
+	Entries           []Entry `json:"entries"`
 }
 
 type Entry struct {
