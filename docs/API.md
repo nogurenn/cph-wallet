@@ -4,11 +4,11 @@
 
 **Method** : `GET`
 
-## Success Responses
+## Success Response
 
 **Code** : `200 OK`
 
-**Content** : Sorted by `id (username)`
+**Content** : Sorted by `id (username)` ascending.
 
 ```json
 {
@@ -39,11 +39,11 @@
 
 **Method** : `GET`
 
-## Success Responses
+## Success Response
 
 **Code** : `200 OK`
 
-**Content** :
+**Content** : Sorted by creation date of `Transaction` descending (latest first).
 
 ```json
 {
@@ -64,7 +64,9 @@
           "from_account": "karen789",
           "direction": "incoming"
         }
-      ]
+      ],
+      "created_at": "2022-02-01T20:33:14.520032Z",
+      "updated_at": "2022-02-01T20:33:14.520032Z"
     }
   ],
   "error": null
@@ -86,7 +88,7 @@
 }
 ```
 
-## Success Responses
+## Success Response
 
 **Code** : `201 CREATED`
 

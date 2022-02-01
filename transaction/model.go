@@ -37,10 +37,10 @@ type Entry struct {
 }
 
 type Payment struct {
-	Id                uuid.UUID `json:"id"`
-	Name              string    `json:"name"`
-	dbutil.Timestamps `json:"-"`
-	Entries           []PaymentEntry `json:"entries"`
+	Id      uuid.UUID      `json:"id"`
+	Name    string         `json:"name"`
+	Entries []PaymentEntry `json:"entries"`
+	dbutil.Timestamps
 }
 
 type PaymentEntry struct {
