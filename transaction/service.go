@@ -10,9 +10,9 @@ type Service interface {
 	CreateAccount(username string) error
 	// GetAccounts fetches all accounts and their respective balances.
 	GetAccounts() ([]Account, error)
-	// GetPaymentTransactions fetches all transactions with name PaymentTransaction
+	// GetPaymentTransactions fetches all transactions with name PaymentTransaction.
 	GetPaymentTransactions() ([]Transaction, error)
-	// Deposit records a deposit transaction for the given username, if the account exists
+	// Deposit records a deposit transaction for the given username, if the account exists.
 	Deposit(username string, amount decimal.Decimal) error
 }
 
