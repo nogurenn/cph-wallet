@@ -39,6 +39,9 @@ func Test_Service_CreateAccount_Success(t *testing.T) {
 
 	// then
 	assert.NoError(t, err)
+
+	txn.AssertExpectations(t)
+	db.AssertExpectations(t)
 }
 
 func Test_Service_GetAccounts_Success(t *testing.T) {
@@ -65,6 +68,9 @@ func Test_Service_GetAccounts_Success(t *testing.T) {
 
 	assert.Equal(t, alice, fetched[0])
 	assert.Equal(t, bob, fetched[1])
+
+	txn.AssertExpectations(t)
+	db.AssertExpectations(t)
 }
 
 func Test_Service_GetPaymentTransactions_Success(t *testing.T) {
@@ -132,6 +138,9 @@ func Test_Service_GetPaymentTransactions_Success(t *testing.T) {
 	}
 	assert.Equal(t, 1, foundIncoming)
 	assert.Equal(t, 1, foundOutgoing)
+
+	txn.AssertExpectations(t)
+	db.AssertExpectations(t)
 }
 
 func Test_Service_Deposit_Success(t *testing.T) {
@@ -173,6 +182,9 @@ func Test_Service_Deposit_Success(t *testing.T) {
 
 	// then
 	assert.NoError(t, err)
+
+	txn.AssertExpectations(t)
+	db.AssertExpectations(t)
 }
 
 func Test_Service_SendPayment_Success(t *testing.T) {
@@ -244,6 +256,43 @@ func Test_Service_SendPayment_Success(t *testing.T) {
 
 	// then
 	assert.NoError(t, err)
+
+	txn.AssertExpectations(t)
+	db.AssertExpectations(t)
+}
+
+func Test_Service_SendPayment_PaymentSenderReceiverIdentical(t *testing.T) {
+	// given
+	amount := decimal.NewFromFloat(201.0)
+
+	db := new(mocktransaction.Repository)
+
+	service := transaction.NewService(db)
+
+	// when
+	err := service.SendPayment("alice456 ", " alice456  ", amount)
+
+	// then
+	assert.Equal(t, transaction.ErrPaymentSenderReceiverIdentical, err)
+
+	db.AssertExpectations(t)
+}
+
+func Test_Service_SendPayment_CreditAmountInvalid(t *testing.T) {
+	// given
+	amount := decimal.NewFromFloat(100.0)
+
+	db := new(mocktransaction.Repository)
+
+	service := transaction.NewService(db)
+
+	// when
+	err := service.SendPayment("bob123", "alice456", amount.Neg())
+
+	// then
+	assert.Equal(t, transaction.ErrCreditAmountInvalid, err)
+
+	db.AssertExpectations(t)
 }
 
 func Test_Service_SendPayment_InsufficientBalance(t *testing.T) {
@@ -269,4 +318,7 @@ func Test_Service_SendPayment_InsufficientBalance(t *testing.T) {
 
 	// then
 	assert.Equal(t, transaction.ErrBalanceInsufficient, err)
+
+	txn.AssertExpectations(t)
+	db.AssertExpectations(t)
 }
