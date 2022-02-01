@@ -1,6 +1,8 @@
 package transaction
 
 import (
+	"strings"
+
 	"github.com/google/uuid"
 	"github.com/nogurenn/cph-wallet/util"
 	"github.com/shopspring/decimal"
@@ -124,23 +126,28 @@ func (s *service) Deposit(username string, amount decimal.Decimal) error {
 }
 
 func (s *service) SendPayment(fromUsername string, toUsername string, amount decimal.Decimal) error {
+	if amount.IsNegative() || amount.IsZero() {
+		return ErrCreditAmountInvalid
+	}
+
+	sanitizedFromUsername := strings.TrimSpace(fromUsername)
+	sanitizedToUsername := strings.TrimSpace(toUsername)
+	if sanitizedFromUsername == sanitizedToUsername {
+		return ErrPaymentSenderReceiverIdentical
+	}
+
 	txn, err := s.db.BeginTxn()
 	if err != nil {
 		return err
 	}
 
-	if amount.IsNegative() || amount.IsZero() {
-		txn.Rollback()
-		return ErrCreditAmountInvalid
-	}
-
-	sender, err := s.db.GetAccountByUsername(txn, fromUsername)
+	sender, err := s.db.GetAccountByUsername(txn, sanitizedFromUsername)
 	if err != nil {
 		txn.Rollback()
 		return err
 	}
 
-	receiver, err := s.db.GetAccountByUsername(txn, toUsername)
+	receiver, err := s.db.GetAccountByUsername(txn, sanitizedToUsername)
 	if err != nil {
 		txn.Rollback()
 		return err
