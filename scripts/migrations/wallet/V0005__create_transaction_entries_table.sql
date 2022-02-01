@@ -29,6 +29,8 @@ CREATE TABLE transaction_entries
             ON DELETE RESTRICT
 );
 
+CREATE INDEX idx_transaction_entries_name ON transaction_entries (name);
+
 CREATE TRIGGER set_updated_at_transaction_entries
     BEFORE UPDATE
     ON transaction_entries
