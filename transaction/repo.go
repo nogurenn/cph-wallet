@@ -115,21 +115,29 @@ func (db *postgresDb) GetTransactionsByName(txn dbutil.Transaction, name string)
 	}
 
 	// since rows are sorted by this stage, we can collect all entries by transaction by folding left
-	// account for first transaction id when collecting all entries per transaction
-	transactions := []Transaction{createTransactionFromRow(transactionWithEntryRows[0])}
-	previousRow := transactionWithEntryRows[0]
-	lastTransactionPointer := 0
-	for _, row := range transactionWithEntryRows[1:] {
+	var (
+		transactions           []Transaction
+		previousRow            transactionJoinEntry
+		lastTransactionPointer int
+	)
+	for i, row := range transactionWithEntryRows {
 		// save the loop variable first because looping over structs in golang reuses the same memory address internally as optimization
 		r := row
+
+		// handle first row
+		if i == 0 {
+			transactions = append(transactions, mapRowToTransaction(r))
+			previousRow = r
+			continue
+		}
 
 		if r.Id == previousRow.Id {
 			transactions[lastTransactionPointer].Entries = append(
 				transactions[lastTransactionPointer].Entries,
-				createEntryFromRow(r),
+				mapRowToEntry(r),
 			)
 		} else {
-			transactions = append(transactions, createTransactionFromRow(r))
+			transactions = append(transactions, mapRowToTransaction(r))
 			lastTransactionPointer += 1
 		}
 
@@ -192,7 +200,7 @@ func (db *postgresDb) CreateEntriesForTransactionId(txn dbutil.Transaction, tran
 
 // --- helpers
 
-func createTransactionFromRow(row transactionJoinEntry) Transaction {
+func mapRowToTransaction(row transactionJoinEntry) Transaction {
 	return Transaction{
 		Id:   row.Id,
 		Name: row.Name,
@@ -200,11 +208,11 @@ func createTransactionFromRow(row transactionJoinEntry) Transaction {
 			CreatedAt: row.CreatedAt,
 			UpdatedAt: row.UpdatedAt,
 		},
-		Entries: []Entry{createEntryFromRow(row)},
+		Entries: []Entry{mapRowToEntry(row)},
 	}
 }
 
-func createEntryFromRow(row transactionJoinEntry) Entry {
+func mapRowToEntry(row transactionJoinEntry) Entry {
 	return Entry{
 		AccountId:       row.AccountId,
 		TargetAccountId: row.TargetAccountId,
