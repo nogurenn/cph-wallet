@@ -4,12 +4,16 @@ Repository by Glenn Harvey T. Liwanag
 ## Design Considerations
 
 ## Structure
-The source is separated into four major layers accompanied by utility packages, and heavily operates using dependency injection with interfaces.
 ```
-internal/
-```
+cph-wallet
+├── dbutil/         - db-related utilities e.g. driver/conn
+├── docs/           - various docfiles e.g. API.md
+├── mocks/          - mock interfaces used in tests
+├── scripts/        - various project scripts and sql migration files
+├── transaction/    - domain src
+└── util/           - utility functions
 
-Migration files and other project-level scripts are found in `scripts/`.
+```
 
 ## Installation
 Install [Docker Engine](https://docs.docker.com/get-docker/) and [Docker Compose](https://docs.docker.com/compose/install/). Make sure `docker-compose` is at least `v2`.
@@ -30,29 +34,30 @@ Pull required `go` modules.
 $ make deps
 ```
 
-Prepare the db container.
-```
-$ make startTestDb; make migrateDb
-```
-
 Run unit and integration tests.
 ```
 $ make testWithIntegrations
 ```
 
-Start the app container. `Ctrl+C` for graceful exit.
+Start the app . `Ctrl+C` for graceful exit.
 ```
-$ make startDev
+$ make startTestDB; make migrateDB; make startDev
 ```
 
 On another shell session, perform API calls.
 ```
 $ curl localhost:8080/transaction/v1/accounts
 
+$ curl -X POST -H "Content-Type: application/json" \
+--data '{"username":"karen789","target_username":"alice456","amount": "44.79"}' \
+localhost:8080/transaction/v1/payments
+
+$ curl localhost:8080/transaction/v1/payments
+
 $ curl localhost:8080/metrics
 ```
 
-Stop all containers
+Stop all containers.
 ```
 $ make stopContainers
 ```
