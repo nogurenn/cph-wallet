@@ -12,7 +12,6 @@ cph-wallet
 ├── scripts/        - various project scripts and sql migration files
 ├── transaction/    - domain src
 └── util/           - utility functions
-
 ```
 
 ## Installation
