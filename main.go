@@ -89,7 +89,10 @@ func main() {
 
 // setupTestData loads test data to repositories.
 func setupTestData(ts transaction.Service) error {
-	usernames := []string{"bob123", "alice456", "karen789"}
+	alice := "alice456"
+	bob := "bob123"
+	karen := "karen789"
+	usernames := []string{bob, alice, karen}
 	initialBalance := decimal.NewFromFloat(200.00)
 
 	for _, username := range usernames {
@@ -102,6 +105,23 @@ func setupTestData(ts transaction.Service) error {
 		if err != nil {
 			return err
 		}
+	}
+
+	err := ts.SendPayment(bob, alice, decimal.NewFromFloat(60.41))
+	if err != nil {
+		return err
+	}
+	err = ts.SendPayment(bob, karen, decimal.NewFromFloat(95.12))
+	if err != nil {
+		return err
+	}
+	err = ts.SendPayment(alice, karen, decimal.NewFromFloat(34.58))
+	if err != nil {
+		return err
+	}
+	err = ts.SendPayment(karen, alice, decimal.NewFromFloat(44.79))
+	if err != nil {
+		return err
 	}
 
 	return nil

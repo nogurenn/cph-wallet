@@ -70,7 +70,14 @@ func (db *postgresDb) GetAccounts(txn dbutil.Transaction) ([]Account, error) {
 }
 
 const sqlGetAccountByUsername = `
-SELECT * FROM accounts WHERE username = $1 
+SELECT
+	a.id,
+	a.username,
+	a.currency,
+	COALESCE(SUM(te.credit + te.debit), 0.0) AS balance
+FROM accounts a LEFT JOIN transaction_entries te ON a.id = te.account_id
+WHERE a.username = $1
+GROUP BY a.id
 `
 
 func (db *postgresDb) GetAccountByUsername(txn dbutil.Transaction, username string) (*Account, error) {

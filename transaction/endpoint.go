@@ -5,6 +5,7 @@ import (
 
 	"github.com/go-kit/kit/endpoint"
 	"github.com/nogurenn/cph-wallet/dbutil"
+	"github.com/shopspring/decimal"
 )
 
 type getAccountsRequest struct{}
@@ -50,6 +51,24 @@ func makeGetPaymentTransactionsEndpoint(s Service) endpoint.Endpoint {
 	}
 }
 
+type sendPaymentRequest struct {
+	Username       string          `json:"username"`
+	TargetUsername string          `json:"target_username"`
+	Amount         decimal.Decimal `json:"amount"`
+}
+
+type sendPaymentResponse struct {
+	Err error `json:"error"`
+}
+
+func makeSendPaymentEndpoint(s Service) endpoint.Endpoint {
+	return func(_ context.Context, request interface{}) (interface{}, error) {
+		req := request.(sendPaymentRequest)
+		err := s.SendPayment(req.Username, req.TargetUsername, req.Amount)
+		return sendPaymentResponse{Err: err}, nil
+	}
+}
+
 // --- helpers
 
 func mapTransactionToPayment(transaction Transaction) Payment {
@@ -74,10 +93,10 @@ func mapEntriesToPaymentEntries(entries []Entry) []PaymentEntry {
 
 		if paymentEntry.Direction == IncomingEntry {
 			paymentEntry.Amount = entry.Credit
-			paymentEntry.FromAccount = entry.TargetAccountName
+			paymentEntry.FromAccount = entry.TargetAccountName.String
 		} else {
 			paymentEntry.Amount = entry.Debit.Abs()
-			paymentEntry.ToAccount = entry.TargetAccountName
+			paymentEntry.ToAccount = entry.TargetAccountName.String
 		}
 
 		paymentEntries = append(paymentEntries, paymentEntry)
