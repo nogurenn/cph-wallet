@@ -24,15 +24,27 @@ func MakeHandler(s Service, logger log.Logger) http.Handler {
 		opts...,
 	)
 
+	getPaymentTransactionsHandler := kithttp.NewServer(
+		makeGetPaymentTransactionsEndpoint(s),
+		decodeGetPaymentTransactionsRequest,
+		encodeResponse,
+		opts...,
+	)
+
 	r := mux.NewRouter()
 
 	r.Handle("/transaction/v1/accounts", getAccountsHandler).Methods("GET")
+	r.Handle("/transaction/v1/payments", getPaymentTransactionsHandler).Methods("GET")
 
 	return r
 }
 
 func decodeGetAccountsRequest(_ context.Context, _ *http.Request) (interface{}, error) {
 	return getAccountsRequest{}, nil
+}
+
+func decodeGetPaymentTransactionsRequest(_ context.Context, _ *http.Request) (interface{}, error) {
+	return getPaymentTransactionsRequest{}, nil
 }
 
 func encodeResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {

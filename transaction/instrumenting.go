@@ -28,3 +28,12 @@ func (s *instrumentingService) GetAccounts() ([]Account, error) {
 
 	return s.Service.GetAccounts()
 }
+
+func (s *instrumentingService) GetPaymentTransactions() ([]Transaction, error) {
+	defer func(begin time.Time) {
+		s.requestCount.With("method", "get_payment_transactions").Add(1)
+		s.requestLatency.With("method", "get_payment_transactions").Observe(time.Since(begin).Seconds())
+	}(time.Now())
+
+	return s.Service.GetPaymentTransactions()
+}

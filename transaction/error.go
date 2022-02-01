@@ -1,0 +1,21 @@
+package transaction
+
+type TransactionEntryMismatch struct {
+	error
+}
+
+func (e *TransactionEntryMismatch) Error() string {
+	return "some or all entries do not match given transaction id"
+}
+
+var ErrTransactionEntryMismatch = &TransactionEntryMismatch{}
+
+type CreditAmountInvalid struct {
+	error
+}
+
+func (e *CreditAmountInvalid) Error() string {
+	return "amount to credit is either zero or negative"
+}
+
+var ErrCreditAmountInvalid = &CreditAmountInvalid{}

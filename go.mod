@@ -17,7 +17,10 @@ require (
 	github.com/gorilla/mux v1.8.0
 )
 
-require github.com/prometheus/client_golang v1.11.0
+require (
+	github.com/prometheus/client_golang v1.11.0
+	gopkg.in/guregu/null.v4 v4.0.0
+)
 
 require (
 	github.com/beorn7/perks v1.0.1 // indirect

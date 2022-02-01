@@ -25,3 +25,14 @@ func (s *loggingService) GetAccounts() ([]Account, error) {
 
 	return s.Service.GetAccounts()
 }
+
+func (s *loggingService) GetPaymentTransactions() ([]Transaction, error) {
+	defer func(begin time.Time) {
+		s.logger.Log(
+			"method", "get_payment_transactions",
+			"took", time.Since(begin),
+		)
+	}(time.Now())
+
+	return s.Service.GetPaymentTransactions()
+}
