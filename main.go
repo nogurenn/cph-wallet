@@ -12,6 +12,7 @@ import (
 	kitprometheus "github.com/go-kit/kit/metrics/prometheus"
 	stdprometheus "github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/shopspring/decimal"
 
 	"github.com/nogurenn/cph-wallet/dbutil"
 	"github.com/nogurenn/cph-wallet/transaction"
@@ -60,6 +61,7 @@ func main() {
 	err = setupTestData(ts)
 	if err != nil {
 		logger.Log("fatal", "test data could not be loaded to the repository")
+		panic(err)
 	}
 
 	httpLogger := log.With(logger, "component", "http")
@@ -88,9 +90,15 @@ func main() {
 // setupTestData loads test data to repositories.
 func setupTestData(ts transaction.Service) error {
 	usernames := []string{"bob123", "alice456", "karen789"}
+	initialBalance := decimal.NewFromFloat(200.00)
 
 	for _, username := range usernames {
 		err := ts.CreateAccount(username)
+		if err != nil {
+			return err
+		}
+
+		err = ts.Deposit(username, initialBalance)
 		if err != nil {
 			return err
 		}
