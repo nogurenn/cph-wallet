@@ -9,3 +9,13 @@ func (e *TransactionEntryMismatch) Error() string {
 }
 
 var ErrTransactionEntryMismatch = &TransactionEntryMismatch{}
+
+type CreditAmountInvalid struct {
+	error
+}
+
+func (e *CreditAmountInvalid) Error() string {
+	return "amount to credit is either zero or negative"
+}
+
+var ErrCreditAmountInvalid = &CreditAmountInvalid{}

@@ -4,6 +4,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/nogurenn/cph-wallet/dbutil"
 	"github.com/shopspring/decimal"
+	"gopkg.in/guregu/null.v4"
 )
 
 type Account struct {
@@ -30,4 +31,22 @@ type Entry struct {
 	Credit            decimal.Decimal `db:"credit"`
 	Debit             decimal.Decimal `db:"debit"`
 	dbutil.Timestamps `json:"-"`
+
+	AccountName       string      `db:"username"`
+	TargetAccountName null.String `db:"target_username"`
+}
+
+type Payment struct {
+	Id                uuid.UUID `json:"id"`
+	Name              string    `json:"name"`
+	dbutil.Timestamps `json:"-"`
+	Entries           []PaymentEntry `json:"entries"`
+}
+
+type PaymentEntry struct {
+	Username    string          `json:"account"`
+	Amount      decimal.Decimal `json:"amount"`
+	ToAccount   null.String     `json:"to_account,omitempty"`
+	FromAccount null.String     `json:"from_account,omitempty"`
+	Direction   string          `json:"direction"`
 }
