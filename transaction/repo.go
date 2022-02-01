@@ -5,6 +5,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/nogurenn/cph-wallet/dbutil"
 	"github.com/shopspring/decimal"
+	"gopkg.in/guregu/null.v4"
 )
 
 const transactionSchemaName = "wallet"
@@ -14,6 +15,8 @@ type Repository interface {
 	BeginTxn() (dbutil.Transaction, error)
 	// GetAccounts retrieves a slice of Account instances.
 	GetAccounts(txn dbutil.Transaction) ([]Account, error)
+	// GetAccountByUsername retrieves an Account by username.
+	GetAccountByUsername(txn dbutil.Transaction, username string) (*Account, error)
 	// CreateAccount creates an Account in the storage.
 	CreateAccount(txn dbutil.Transaction, account Account) error
 	// GetTransactionsByName retrieves all transactions with name `name` and their respective entries.
@@ -55,6 +58,7 @@ SELECT
 	COALESCE(SUM(te.credit + te.debit), 0.0) AS balance
 FROM accounts a LEFT JOIN transaction_entries te ON a.id = te.account_id
 GROUP BY a.id
+ORDER BY a.username
 `
 
 func (db *postgresDb) GetAccounts(txn dbutil.Transaction) ([]Account, error) {
@@ -63,6 +67,18 @@ func (db *postgresDb) GetAccounts(txn dbutil.Transaction) ([]Account, error) {
 		return nil, err
 	}
 	return accounts, nil
+}
+
+const sqlGetAccountByUsername = `
+SELECT * FROM accounts WHERE username = $1 
+`
+
+func (db *postgresDb) GetAccountByUsername(txn dbutil.Transaction, username string) (*Account, error) {
+	account := new(Account)
+	if err := txn.Get(account, sqlGetAccountByUsername, username); err != nil {
+		return nil, err
+	}
+	return account, nil
 }
 
 const sqlCreateAccount = `
@@ -82,12 +98,25 @@ SELECT
 	t.updated_at,
 	te.account_id,
 	te.target_account_id,
-	te.entry_name,
+	te.name AS entry_name,
 	te.credit,
 	te.debit,
-FROM transactions t JOIN transaction_entries te ON t.id = te.transaction_id
+	a1.username,
+	a2.username AS target_username
+FROM transactions t 
+INNER JOIN transaction_entries te ON t.id = te.transaction_id
+INNER JOIN accounts a1 ON te.account_id = a1.id
+LEFT OUTER JOIN accounts a2 ON te.target_account_id = a2.id
 WHERE t.name = $1
-GROUP BY t.id
+GROUP BY 
+	t.id,
+	te.account_id,
+	te.target_account_id,
+	entry_name,
+	te.credit,
+	te.debit,
+	a1.username,
+	target_username
 ORDER BY t.created_at DESC
 `
 
@@ -103,6 +132,10 @@ type transactionJoinEntry struct {
 	EntryName       string          `db:"entry_name"`
 	Credit          decimal.Decimal `db:"credit"`
 	Debit           decimal.Decimal `db:"debit"`
+
+	// Account
+	AccountName       string      `db:"username"`
+	TargetAccountName null.String `db:"target_username"`
 }
 
 func (db *postgresDb) GetTransactionsByName(txn dbutil.Transaction, name string) ([]Transaction, error) {
@@ -153,8 +186,8 @@ SELECT transactions.id FROM transactions FOR UPDATE
 `
 
 func (db *postgresDb) LockTransactions(txn dbutil.Transaction) error {
-	var transactions []Transaction
-	return txn.Select(&transactions, sqlLockTransactions)
+	var transactionIds []uuid.UUID
+	return txn.Select(&transactionIds, sqlLockTransactions)
 }
 
 const sqlCreateTransaction = `
@@ -214,10 +247,12 @@ func mapRowToTransaction(row transactionJoinEntry) Transaction {
 
 func mapRowToEntry(row transactionJoinEntry) Entry {
 	return Entry{
-		AccountId:       row.AccountId,
-		TargetAccountId: row.TargetAccountId,
-		Name:            row.EntryName,
-		Credit:          row.Credit,
-		Debit:           row.Debit,
+		AccountId:         row.AccountId,
+		TargetAccountId:   row.TargetAccountId,
+		Name:              row.EntryName,
+		Credit:            row.Credit,
+		Debit:             row.Debit,
+		AccountName:       row.AccountName,
+		TargetAccountName: row.TargetAccountName,
 	}
 }
