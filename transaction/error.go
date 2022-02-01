@@ -19,3 +19,13 @@ func (e *CreditAmountInvalid) Error() string {
 }
 
 var ErrCreditAmountInvalid = &CreditAmountInvalid{}
+
+type BalanceInsufficient struct {
+	error
+}
+
+func (e *BalanceInsufficient) Error() string {
+	return "balance of sender is insufficient"
+}
+
+var ErrBalanceInsufficient = &BalanceInsufficient{}

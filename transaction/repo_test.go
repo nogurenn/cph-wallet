@@ -9,6 +9,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/nogurenn/cph-wallet/dbutil"
 	"github.com/nogurenn/cph-wallet/transaction"
+	"github.com/nogurenn/cph-wallet/util"
 	"github.com/shopspring/decimal"
 	"github.com/stretchr/testify/assert"
 )
@@ -121,26 +122,20 @@ func Test_PostgresDb_CreateAndGetTransactionsByName(t *testing.T) {
 	// payment transaction
 	paymentId := uuid.New()
 	fromBob := transaction.Entry{
-		Id:            uuid.New(),
-		TransactionId: paymentId,
-		AccountId:     bob.Id,
-		TargetAccountId: uuid.NullUUID{
-			UUID:  alice.Id,
-			Valid: true,
-		},
-		Name:  transaction.OutgoingEntry,
-		Debit: decimal.NewFromFloat(-100.00),
+		Id:              uuid.New(),
+		TransactionId:   paymentId,
+		AccountId:       bob.Id,
+		TargetAccountId: util.NewNullUUID(alice.Id),
+		Name:            transaction.OutgoingEntry,
+		Debit:           decimal.NewFromFloat(-100.00),
 	}
 	toAlice := transaction.Entry{
-		Id:            uuid.New(),
-		TransactionId: paymentId,
-		AccountId:     alice.Id,
-		TargetAccountId: uuid.NullUUID{
-			UUID:  bob.Id,
-			Valid: true,
-		},
-		Name:   transaction.IncomingEntry,
-		Credit: decimal.NewFromFloat(100.00),
+		Id:              uuid.New(),
+		TransactionId:   paymentId,
+		AccountId:       alice.Id,
+		TargetAccountId: util.NewNullUUID(bob.Id),
+		Name:            transaction.IncomingEntry,
+		Credit:          decimal.NewFromFloat(100.00),
 	}
 	payment := transaction.Transaction{
 		Id:      paymentId,
