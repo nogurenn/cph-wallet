@@ -2,6 +2,16 @@
 Repository by Glenn Harvey T. Liwanag
 
 ## Design Considerations
+* The project design is based on **double-entry bookkeeping**, with `Transaction` as parent, and `Entry` as children. This was chosen to prioritize **auditability**, a critical aspect of finance-related systems.
+  * `Transaction` (`payment`)
+    * `Entry` (`outgoing`)
+    * `Entry` (`incoming`)
+  * `Transaction` (`deposit`)
+    * `Entry` (`incoming`)
+* Represent financial numbers using `shopspring/decimal` to safely operate on them and avoid silent precision loss.
+* Serialize decimal fields in responses to string instead of JSON number to prevent precision loss.
+* Use `UUID` as primary keys in db tables.
+* Calculations, such as `SUM(credit, debit)`, are deferred to the DB as much as possible, trading away simpler SQL queries and commands in exchange for easier performance gains right from the start.
 
 ## Structure
 ```
