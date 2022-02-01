@@ -81,6 +81,29 @@ func (_m *Repository) CreateTransaction(txn dbutil.Transaction, _a1 transaction.
 	return r0
 }
 
+// GetAccountByUsername provides a mock function with given fields: txn, username
+func (_m *Repository) GetAccountByUsername(txn dbutil.Transaction, username string) (*transaction.Account, error) {
+	ret := _m.Called(txn, username)
+
+	var r0 *transaction.Account
+	if rf, ok := ret.Get(0).(func(dbutil.Transaction, string) *transaction.Account); ok {
+		r0 = rf(txn, username)
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).(*transaction.Account)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func(dbutil.Transaction, string) error); ok {
+		r1 = rf(txn, username)
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
 // GetAccounts provides a mock function with given fields: txn
 func (_m *Repository) GetAccounts(txn dbutil.Transaction) ([]transaction.Account, error) {
 	ret := _m.Called(txn)
