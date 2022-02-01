@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/go-kit/kit/metrics"
+	"github.com/shopspring/decimal"
 )
 
 type instrumentingService struct {
@@ -36,4 +37,13 @@ func (s *instrumentingService) GetPaymentTransactions() ([]Transaction, error) {
 	}(time.Now())
 
 	return s.Service.GetPaymentTransactions()
+}
+
+func (s *instrumentingService) SendPayment(username string, targetUsername string, amount decimal.Decimal) error {
+	defer func(begin time.Time) {
+		s.requestCount.With("method", "send_payment").Add(1)
+		s.requestLatency.With("method", "send_payment").Observe(time.Since(begin).Seconds())
+	}(time.Now())
+
+	return s.Service.SendPayment(username, targetUsername, amount)
 }

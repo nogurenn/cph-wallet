@@ -46,7 +46,7 @@ type Payment struct {
 type PaymentEntry struct {
 	Username    string          `json:"account"`
 	Amount      decimal.Decimal `json:"amount"`
-	ToAccount   null.String     `json:"to_account,omitempty"`
-	FromAccount null.String     `json:"from_account,omitempty"`
+	ToAccount   string          `json:"to_account,omitempty"`
+	FromAccount string          `json:"from_account,omitempty"`
 	Direction   string          `json:"direction"`
 }

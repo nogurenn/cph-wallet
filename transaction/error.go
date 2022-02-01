@@ -29,3 +29,13 @@ func (e *BalanceInsufficient) Error() string {
 }
 
 var ErrBalanceInsufficient = &BalanceInsufficient{}
+
+type PaymentSenderReceiverIdentical struct {
+	error
+}
+
+func (e *PaymentSenderReceiverIdentical) Error() string {
+	return "sender and receiver usernames are identical"
+}
+
+var ErrPaymentSenderReceiverIdentical = &PaymentSenderReceiverIdentical{}

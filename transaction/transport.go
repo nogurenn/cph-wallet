@@ -3,6 +3,7 @@ package transaction
 import (
 	"context"
 	"encoding/json"
+	"io/ioutil"
 	"net/http"
 
 	"github.com/go-kit/kit/transport"
@@ -23,10 +24,15 @@ func MakeHandler(s Service, logger log.Logger) http.Handler {
 		encodeResponse,
 		opts...,
 	)
-
 	getPaymentTransactionsHandler := kithttp.NewServer(
 		makeGetPaymentTransactionsEndpoint(s),
 		decodeGetPaymentTransactionsRequest,
+		encodeResponse,
+		opts...,
+	)
+	sendPaymentHandler := kithttp.NewServer(
+		makeSendPaymentEndpoint(s),
+		decodeSendPaymentRequest,
 		encodeResponse,
 		opts...,
 	)
@@ -35,6 +41,7 @@ func MakeHandler(s Service, logger log.Logger) http.Handler {
 
 	r.Handle("/transaction/v1/accounts", getAccountsHandler).Methods("GET")
 	r.Handle("/transaction/v1/payments", getPaymentTransactionsHandler).Methods("GET")
+	r.Handle("/transaction/v1/payments", sendPaymentHandler).Methods("POST")
 
 	return r
 }
@@ -45,6 +52,21 @@ func decodeGetAccountsRequest(_ context.Context, _ *http.Request) (interface{}, 
 
 func decodeGetPaymentTransactionsRequest(_ context.Context, _ *http.Request) (interface{}, error) {
 	return getPaymentTransactionsRequest{}, nil
+}
+
+func decodeSendPaymentRequest(_ context.Context, r *http.Request) (interface{}, error) {
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	var req sendPaymentRequest
+	err = json.Unmarshal(body, &req)
+	if err != nil {
+		return nil, err
+	}
+
+	return req, nil
 }
 
 func encodeResponse(ctx context.Context, w http.ResponseWriter, response interface{}) error {

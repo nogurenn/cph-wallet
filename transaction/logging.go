@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/go-kit/log"
+	"github.com/shopspring/decimal"
 )
 
 type loggingService struct {
@@ -35,4 +36,15 @@ func (s *loggingService) GetPaymentTransactions() ([]Transaction, error) {
 	}(time.Now())
 
 	return s.Service.GetPaymentTransactions()
+}
+
+func (s *loggingService) SendPayment(username string, targetUsername string, amount decimal.Decimal) error {
+	defer func(begin time.Time) {
+		s.logger.Log(
+			"method", "send_payment",
+			"took", time.Since(begin),
+		)
+	}(time.Now())
+
+	return s.Service.SendPayment(username, targetUsername, amount)
 }
